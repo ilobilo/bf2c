@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
          << "\n"
          << "int main()\n"
          << "{\n"
-         << "    char array[30000];\n"
+         << "    char array[30000] = { 0 };\n"
          << "    char *ptr = array;\n"
          << "\n";
 
@@ -33,10 +33,10 @@ int main(int argc, char *argv[])
         switch (ch)
         {
             case '>':
-                fout << spaces << "++ptr;\n";
+                fout << spaces << "((ptr == &array[29999]) ? ptr = array : ptr++);\n";
                 break;
             case '<':
-                fout << spaces << "--ptr;\n";
+                fout << spaces << "((ptr == array) ? ptr = &array[29999] : ptr--);\n";
                 break;
             case '+':
                 fout << spaces << "++*ptr;\n";
