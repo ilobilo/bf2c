@@ -1,13 +1,13 @@
 CPP = clang++
-OUT = bf2c
+TARGET = bf2c
 
-CPPFLAGS = -Wall -Werror -Wextra
+CPPFLAGS = -std=gnu++20 -Wall -Werror -Wextra
 MAINCPP = main.cpp
 
-all: $(OUT)
+all: $(TARGET)
 
-$(OUT):
-	$(CPP) $(CPPFLAGS) $(MAINCPP) -o $(OUT)
+$(TARGET):
+	$(CPP) $(CPPFLAGS) $(MAINCPP) -o $(TARGET)
 
 clean:
-	rm $(OUT)
+	rm -f $(TARGET)
