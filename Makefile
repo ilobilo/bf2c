@@ -6,7 +6,7 @@ MAINCPP = main.cpp
 
 all: $(TARGET)
 
-$(TARGET):
+$(TARGET): clean
 	$(CPP) $(CPPFLAGS) $(MAINCPP) -o $(TARGET)
 
 clean:
