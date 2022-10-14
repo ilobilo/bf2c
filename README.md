@@ -1,6 +1,7 @@
-# bf2c
+# Bf2c
 Brainfuck to C compiler
 
-* Run ```make``` to compile
-* Default compiler is clang++, specify custom one with CPP=MyCompiler (e.g. g++)
-* Usage: ./bf2c in.bf out.c
+## Building and Running
+* ``meson builddir``
+* ``ninja -C builddir``
+* ``./builddir/bf2c input.bf output.c``
