@@ -17,12 +17,18 @@ const auto parser = conflict::parser
     conflict::option { { 'v', "version", "Show version" }, flags, (1 << 1) }
 };
 
+void usage(bool err)
+{
+    auto &out = (err ? std::cerr : std::cout);
+    out << "Usage:\n";
+    out << "    bf2c input.bf output.c\n";
+}
+
 bool parse_flags()
 {
     if (flags & (1 << 0))
     {
-        std::cout << "Usage:\n";
-        std::cout << "    bf2c input.bf output.c\n";
+        usage(false);
         std::cout << "Options:\n";
         parser.print_help();
         return true;
@@ -46,8 +52,7 @@ auto main(int argc, char **argv) -> int
 
     if (files.size() != 2)
     {
-        std::cerr << "Usage:\n";
-        std::cerr << "    bf2c input.bf output.c" << std::endl;
+        usage(true);
         return EXIT_FAILURE;
     }
 
@@ -76,7 +81,7 @@ auto main(int argc, char **argv) -> int
     std::ofstream output(output_file.data(), std::ios::trunc);
     std::string spaces("    ");
 
-    output << "extern int putchar(int __c);\n"
+    output << "extern int putchar(int c);\n"
            << "extern int getchar(void);\n"
            << "\n"
            << "int main()\n"
