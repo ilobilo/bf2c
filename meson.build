@@ -1,4 +1,4 @@
-project('bf2c', 'cpp',
+project('bf2asm', 'cpp',
     version : 'v0.1',
     default_options : ['cpp_std=c++20']
 )
@@ -10,7 +10,7 @@ sources = [
 includes = include_directories('src')
 conflict_dep = dependency('conflict')
 
-executable('bf2c',
+executable('bf2asm',
     dependencies : [conflict_dep],
     sources : sources,
     include_directories : includes

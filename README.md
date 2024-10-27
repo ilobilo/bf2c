@@ -1,7 +1,7 @@
-# Bf2c
-Brainfuck to C compiler
+# Bf2asm
+Brainfuck to asm compiler
 
 ## Building and Running
 * ``meson builddir``
 * ``ninja -C builddir``
-* ``./builddir/bf2c input.bf output.c``
+* ``./builddir/bf2asm input.bf output.S``

@@ -21,7 +21,7 @@ void usage(bool err)
 {
     auto &out = (err ? std::cerr : std::cout);
     out << "Usage:\n";
-    out << "    bf2c input.bf output.c\n";
+    out << "    bf2asm input.bf output.S\n";
 }
 
 bool parse_flags()
@@ -35,7 +35,7 @@ bool parse_flags()
     }
     else if (flags & (1 << 1))
     {
-        std::cout << "bf2c v0.1\n";
+        std::cout << "bf2asm v0.1\n";
         return true;
     }
 
@@ -79,52 +79,89 @@ auto main(int argc, char **argv) -> int
 
     std::ifstream input(input_file.data());
     std::ofstream output(output_file.data(), std::ios::trunc);
-    std::string spaces("    ");
 
-    output << "extern int putchar(int c);\n"
-           << "extern int getchar(void);\n"
-           << "\n"
-           << "int main()\n"
-           << "{\n"
-           << "    char array[30000] = { 0 };\n"
-           << "    char *ptr = array;\n"
-           << "\n";
+    output <<
+R"(.bss
+array: .zero 30000
+
+.text
+
+write:
+    enter 0, 0
+
+    push di
+
+    mov rax, 1
+    mov rdi, 1
+    mov rsi, rsp
+    mov rdx, 1
+
+    syscall
+
+    leave
+    ret
+
+read:
+    enter 0, 0
+
+    sub rsp, 8
+
+    mov rax, 0
+    mov rdi, 0
+    lea rsi, [rbp - 8]
+    mov rdx, 1
+
+    syscall
+
+    movzx ax, byte ptr [rsp]
+
+    leave
+    ret
+
+_start:
+    mov rax, array
+    mov [rsp], rax
+)";
 
     for (auto c = input.get(); c != EOF; c = input.get())
     {
         switch (c)
         {
             case '>':
-                output << spaces << "((ptr == &array[29999]) ? ptr = array : ptr++);\n";
+                output << "    add rsp, 1\n";
                 break;
             case '<':
-                output << spaces << "((ptr == array) ? ptr = &array[29999] : ptr--);\n";
+                output << "    sub rsp, 1\n";
                 break;
             case '+':
-                output << spaces << "++*ptr;\n";
+                output << "    mov ax, [rsp]\n    inc ax\n    mov [rsp], ax\n";
                 break;
             case '-':
-                output << spaces << "--*ptr;\n";
+                output << "    mov ax, [rsp]\n    dec ax\n    mov [rsp], ax\n";
                 break;
             case '.':
-                output << spaces << "putchar(*ptr);\n";
+                output << "    mov di, [rsp]\n    call write\n";
                 break;
             case ',':
-                output << spaces << "*ptr = getchar();\n";
+                output << "    xor ax, ax\n    call read\n    mov [rsp], ax\n";
                 break;
             case '[':
-                output << spaces << "while (*ptr)\n";
-                output << spaces << "{\n";
-                spaces += "    ";
+                output << "    mov ax, [rsp]\n    test ax, ax\n    jz 2f\n";
+                output << "1:\n";
                 break;
             case ']':
-                spaces.erase(spaces.length() - 4);
-                output << spaces << "}\n";
+                output << "    mov ax, [rsp]\n    test ax, ax\n    jnz 1b\n";
+                output << "2:\n";
                 break;
         }
     }
 
-    output << "}";
+    output <<
+R"(    mov rax, 60
+    mov rdi, 0
+    syscall
+.global _start
+)";
 
     input.close();
     output.close();
