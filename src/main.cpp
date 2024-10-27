@@ -102,13 +102,11 @@ write:
     ret
 
 read:
-    enter 0, 0
-
-    sub rsp, 8
+    enter 1, 0
 
     mov rax, 0
     mov rdi, 0
-    lea rsi, [rbp - 8]
+    lea rsi, [rbp - 1]
     mov rdx, 1
 
     syscall
